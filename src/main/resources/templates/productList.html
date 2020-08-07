@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+   xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+   <head>
+      <meta charset="UTF-8">
+      <title>Product List</title>
+      <link rel="stylesheet" type="text/css" th:href="@{/styles.css}">
+   </head>
+   <body>
+      <th:block th:include="/_header"></th:block>
+      <th:block th:include="/_menu"></th:block>
+      
+      <div class="page-title">Product List</div>
+      <div class="product-preview-container" th:each="product,iterStat : ${products.pageList}">
+	     <ul>     	
+	     	<li th:text="${iterStat.count}"></li>
+      		<li><img class="product-image"
+               th:src="@{|/productImage?code=${product.code}|}" /></li>
+            <li>Code: <span th:text="${product.code}"></span></li>
+            <li>Name: <span th:text="${product.name}"></span></li>
+            <li>Price: <span th:text="${#numbers.formatDecimal(product.price,3,2,'COMMA')}"></span></li>          
+            <li>
+               <a th:href="@{|/buyProduct?code=${product.code}|}">Buy Now</a>
+            </li>
+            <!-- For Manager edit Product -->
+            <th:block sec:authorize="hasAuthority('ROLE_MANAGER')">
+               <li>
+                 <a style="color:red;"
+                    th:href="@{|/admin/product?code=${product.code}|}">Edit Product</a>
+               </li>
+            </th:block>
+	     </ul>
+      </div>
+      <ul class="page-navigator">
+			<li
+				th:class="${currentIndex == 1}? 'page-item disabled' : 'page-item'">
+				<a class="page-link" th:href="@{/productList/page/1}">First</a>
+			</li>
+			<li
+				th:class="${currentIndex == 1}? 'page-item disabled': 'page-item' ">
+				<a class="page-link" aria-label="Previous"
+				th:href="@{|${baseUrl}${currentIndex - 1}|}"
+				title='Go to previous page'><span aria-hidden="true">«</span>
+					<span class="sr-only">Previous</span></a>
+			</li>
+			<li th:each="item : ${#numbers.sequence(beginIndex,endIndex)}"
+				th:class="${item == currentIndex ? 'page-item active' :'page-item' }">
+				<a class="page-link" th:href="@{|${baseUrl}${item}|}"> <span
+					th:text='${item}'>1</span>
+			</a>
+			</li>
+			<li
+				th:class="${currentIndex == totalPageCount}? 'page-item disabled': 'page-item'">
+				<a class="page-link" aria-label="Next"
+				th:href="@{|${baseUrl}${currentIndex + 1}|}" title='Go to next page'><span
+					aria-hidden="true">»</span> <span class="sr-only">Next</span></a>
+			</li>
+			<li
+				th:class="${currentIndex == totalPageCount}? 'page-item disabled':'page-item'">
+				<a class="page-link" th:href="@{|${baseUrl}${totalPageCount}|}">Last</a>
+			</li>
+		</ul> 
+		
+		<th:block th:include="/_footer"></th:block>
+   </body>
+</html>
